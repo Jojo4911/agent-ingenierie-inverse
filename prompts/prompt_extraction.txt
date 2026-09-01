@@ -1,0 +1,41 @@
+Tu reçois le plan technique d'une pièce mécanique.
+
+Extrais uniquement ce que tu lis sur le plan. Ne complète aucune valeur par convention ou par vraisemblance. Si une côte n'est pas lisible ou pas cotée,
+mets null et signale-la dans "incertitudes".
+
+Réponds par un objet JSON valide et rien d'autre. Pas de texte avant ou après, pas de balises de code.
+
+Schéma attendu :
+
+{
+  "origine": "point de référence que tu as choisi, décrit en une phrase",
+  "bbox_x_mm": nombre, "bbox_y_mm": nombre, "bbox_z_mm": nombre,
+  "corps": [
+    {
+      "nom": "chaine",
+      "type": "contour_extrude" | "cercle_extrude",
+      "profil": "description du contour et ses dimensions principales",
+      "hauteur_extrusion_mm": nombre,
+      "z_base_mm": nombre,
+      "position_x_mm": nombre, "position_y_mm": nombre
+    }
+  ],
+  "operation": "comment les corps se combinent, si plusieurs",
+  "trous": [
+    {"diametre_mm": nombre, "centre_x_mm": nombre, "centre_y_mm": nombre,
+     "face": "chaine"}
+  ],
+  "poches": [
+    {"forme": "chaine", "diametre_mm": nombre, "l_x_mm": nombre, "l_y_mm": nombre,
+     "profondeur_mm": nombre, "centre_x_mm": nombre, "centre_y_mm": nombre,
+     "face": "chaine"}
+  ],
+  "cotes_lues": [
+    {"valeur": nombre, "designation": "ce que cette cote mesure",
+     "vue": "vue du plan ou tu l'as lue"}
+  ],
+  "incertitudes": ["chaine"]
+}
+
+Définitions : "trous" designe les percages traversants uniquement. "poches" désigne tout enlevement de matière non traversant, de section quelconque.
+Un tableau vide est une réponse valide.

@@ -1,0 +1,18 @@
+{
+  "origine": "coin bas gauche du rectangle englobant de la semelle, z=0 en face inferieure",
+  "corps": [
+    {"nom": "semelle", "type": "contour_extrude",
+     "profil": "rectangle 140 (x) x 50 (y), avec une encoche debouchante de 30 en x et 20 en y a chaque extremite, centree en y",
+     "hauteur_extrusion_mm": 10, "z_base_mm": 0,
+     "position_x_mm": 0, "position_y_mm": 0},
+    {"nom": "cylindre", "type": "cercle_extrude", "profil": "cercle diametre 64",
+     "hauteur_extrusion_mm": 50, "z_base_mm": 0,
+     "position_x_mm": 70, "position_y_mm": 25}
+  ],
+  "operation": "union des deux corps",
+  "trous": [],
+  "poches": [
+    {"forme": "cylindrique", "diametre_mm": 40, "profondeur_mm": 24,
+     "centre_x_mm": 70, "centre_y_mm": 25, "face": "superieure du cylindre a z=50"}
+  ]
+}

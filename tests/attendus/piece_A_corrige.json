@@ -1,0 +1,14 @@
+{
+  "origine": "coin bas gauche de la plaque, z=0 en face inferieure",
+  "corps": [
+    {"nom": "plaque", "type": "contour_extrude", "profil": "rectangle 84 x 52",
+     "hauteur_extrusion_mm": 12, "z_base_mm": 0,
+     "position_x_mm": 0, "position_y_mm": 0}
+  ],
+  "operation": "corps unique",
+  "trous": [
+    {"diametre_mm": 8.5, "centre_x_mm": 18, "centre_y_mm": 14, "face": "superieure"},
+    {"diametre_mm": 8.5, "centre_x_mm": 66, "centre_y_mm": 38, "face": "superieure"}
+  ],
+  "poches": []
+}

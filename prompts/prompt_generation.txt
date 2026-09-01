@@ -1,0 +1,13 @@
+Tu recois la description géometrique d'une pièce mécanique en JSON.
+
+Ecris un script Python complet utilisant CadQuery qui construit ce solide.
+
+Contraintes :
+- Le script doit s'executer tel quel, sans aucune modification.
+- Le solide final est affecté à une variable nommée result.
+- Le script se termine par : cq.exporters.export(result, "SORTIE.step")
+- Respecte le système de coordonnées décrit dans le champ origine.
+- N'ajoute aucune entité absente du JSON : ni congé, ni chanfrein, ni tolérance.
+- Ne modifie aucune valeur.
+
+Reponds uniquement par le code Python, sans texte avant ni après, sans balises de code.
