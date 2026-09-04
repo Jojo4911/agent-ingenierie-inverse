@@ -11,7 +11,8 @@ __pycache__/
 
 # Sorties de travail
 *.step
-!tests/attendus/*.step
+!corpus/dev/*.step
+!corpus/holdout/*.step
 out/
 tmp/
 
