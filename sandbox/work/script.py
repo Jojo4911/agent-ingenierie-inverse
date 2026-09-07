@@ -1,4 +1,15 @@
-
 import cadquery as cq
-r = cq.Workplane("XY").box(20, 10)   # argument manquant, doit lever
-cq.exporters.export(r, "/work/out.step")
+
+result = (
+    cq.Workplane("XY")
+    .box(84, 52, 12, centered=(False, False, False))
+)
+
+result = (
+    result.faces(">Z")
+    .workplane(origin=(0, 0, 0))
+    .pushPoints([(18, 14), (66, 38)])
+    .hole(8.5)
+)
+
+cq.exporters.export(result, "/work/out.step")
