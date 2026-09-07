@@ -16,6 +16,12 @@ la bbox en X et en Y ainsi que le volume attendu. Cause unique, deux effets.
 """
 from __future__ import annotations
 
+from OCP.BRepClass3d import BRepClass3d_SolidClassifier
+from OCP.gp import gp_Pnt
+from OCP.TopAbs import TopAbs_IN
+
+from verify import load_solid, optimal_bbox, cylinders, count_holes
+
 # Périmètre géométrique borné. Toute autre valeur est signalée plutôt
 # qu'interprétée.
 CORPS_SUPPORTES = {"contour_extrude", "cercle_extrude"}
@@ -83,4 +89,102 @@ def attendu(primitives: dict) -> dict:
         "volume_mm3": None,
         "non_calculable": non_calculable,
         "hors_perimetre": hors_perimetre,
+    }
+
+
+def _traversant(solid, foot, direction, n_echantillons=60):
+    """Vrai si l'axe du cylindre ne rencontre aucune matière sur toute l'étendue
+    de la pièce. Un trou borgne laisse de la matière au-delà de son fond.
+    """
+    bb = solid.BoundingBox()
+    coins = [
+        (x, y, z)
+        for x in (bb.xmin, bb.xmax)
+        for y in (bb.ymin, bb.ymax)
+        for z in (bb.zmin, bb.zmax)
+    ]
+    # projection des huit coins sur l'axe : borne l'échantillonnage à la pièce
+    ts = [sum((c[i] - foot[i]) * direction[i] for i in range(3)) for c in coins]
+    t_min, t_max = min(ts), max(ts)
+
+    clf = BRepClass3d_SolidClassifier(solid.wrapped)
+    for k in range(n_echantillons + 1):
+        t = t_min + (t_max - t_min) * k / n_echantillons
+        p = gp_Pnt(*(foot[i] + t * direction[i] for i in range(3)))
+        clf.Perform(p, 1e-7)
+        if clf.State() == TopAbs_IN:
+            return False
+    return True
+
+
+def mesure(step_path: str) -> dict:
+    """Mesure sur le solide produit : boîte englobante et trous traversants.
+    Ne lit aucune vérité terrain, ne juge pas, ne fait que constater.
+    """
+    solid = load_solid(step_path)
+    x_mm, y_mm, z_mm = optimal_bbox(solid)
+
+    # cylindres creux uniquement, puis traversants uniquement : la convention
+    # des fichiers de vérité sépare trous traversants et poches
+    cyls = [c for c in cylinders(solid) if c[3] and _traversant(solid, c[1], c[2])]
+
+    return {
+        "bbox_x_mm": x_mm,
+        "bbox_y_mm": y_mm,
+        "bbox_z_mm": z_mm,
+        "nb_trous_traversants": count_holes(cyls),
+        "nb_poches": None,       # non mesurable sur le solide
+        "volume_mm3": None,      # renseigné en T36
+    }
+
+
+def _aplatir(d: dict) -> dict:
+    """Ramène les deux formes de dictionnaire à un jeu de clés unique.
+
+    attendu() porte la boîte englobante dans un tuple "bbox_mm", mesure() la
+    porte en trois clés séparées. Sans cette normalisation, compare() ne trouve
+    aucune bbox du côté attendu et déclare les trois axes non vérifiables sans
+    rien signaler.
+    """
+    plat = dict(d)
+    bbox = plat.pop("bbox_mm", None)
+    if bbox is not None:
+        plat["bbox_x_mm"], plat["bbox_y_mm"], plat["bbox_z_mm"] = bbox
+    return plat
+
+
+def compare(attendu: dict, mesure: dict, tol_mm: float = 0.5, tol_rel: float = 0.01) -> dict:
+    """Confronte attendu et mesure champ par champ, en trois verdicts.
+    Un champ absent d'un des deux côtés est déclaré non vérifiable, jamais conforme.
+    """
+    attendu, mesure = _aplatir(attendu), _aplatir(mesure)
+
+    champs = [
+        "bbox_x_mm",
+        "bbox_y_mm",
+        "bbox_z_mm",
+        "nb_trous_traversants",
+        "nb_poches",
+        "volume_mm3",
+    ]
+
+    verdicts = {}
+    for champ in champs:
+        a, m = attendu.get(champ), mesure.get(champ)
+        if a is None or m is None:
+            verdicts[champ] = "non vérifiable"
+        elif isinstance(a, int) and isinstance(m, int):
+            verdicts[champ] = "conforme" if a == m else "non conforme"
+        else:
+            ecart = abs(float(a) - float(m))
+            # les deux tolérances sont alternatives, pas cumulatives
+            ok = ecart <= tol_mm or (a != 0 and ecart / abs(float(a)) <= tol_rel)
+            verdicts[champ] = "conforme" if ok else "non conforme"
+
+    controles = [v for v in verdicts.values() if v != "non vérifiable"]
+    return {
+        "verdicts": verdicts,
+        "conforme": bool(controles) and all(v == "conforme" for v in controles),
+        "nb_controles": len(controles),
+        "nb_non_verifiables": len(verdicts) - len(controles),
     }
