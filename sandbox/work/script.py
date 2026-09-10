@@ -1,24 +1,26 @@
+raise RuntimeError('faute injectée, tentative 2')
 import cadquery as cq
 
-# Dimensions
-L = 84.0   # longueur (X)
-H = 52.0   # hauteur (Y)
-E = 12.0   # epaisseur (Z)
+longueur = 84.0
+hauteur = 52.0
+epaisseur = 12.0
 
-# Plaque rectangulaire, coin inferieur gauche a l'origine, face avant z=0
 result = (
     cq.Workplane("XY")
-    .moveTo(0, 0)
-    .rect(L, H, centered=False)
-    .extrude(E)
+    .box(longueur, hauteur, epaisseur, centered=(False, False, False))
 )
 
-# Percages traversants Ø8.5
-result = (
-    result.faces(">Z")
-    .workplane(origin=(0, 0, 0))
-    .pushPoints([(18.0, 14.0), (66.0, 38.0)])
-    .hole(8.5)
-)
+trous = [
+    (18.0, 14.0, 8.5),
+    (66.0, 38.0, 8.5),
+]
+
+for x, y, d in trous:
+    result = (
+        result.faces(">Z")
+        .workplane(origin=(0, 0, 0))
+        .center(x, y)
+        .hole(d)
+    )
 
 cq.exporters.export(result, "/work/out.step")
