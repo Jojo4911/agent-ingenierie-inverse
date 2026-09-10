@@ -134,7 +134,7 @@ def mesure(step_path: str) -> dict:
         "bbox_z_mm": z_mm,
         "nb_trous_traversants": count_holes(cyls),
         "nb_poches": None,       # non mesurable sur le solide
-        "volume_mm3": None,      # renseigné en T36
+        "volume_mm3": solid.Volume(),
     }
 
 
@@ -168,10 +168,16 @@ def compare(attendu: dict, mesure: dict, tol_mm: float = 0.5, tol_rel: float = 0
         "volume_mm3",
     ]
 
-    verdicts = {}
+    verdicts, mesures_seules = {}, {}
     for champ in champs:
         a, m = attendu.get(champ), mesure.get(champ)
-        if a is None or m is None:
+        if a is None and m is not None:
+            # grandeur produite mais sans attendu calculable : cause unique,
+            # le champ profil est du texte libre. Transportée telle quelle
+            # vers le bloc 5, où deux solides mesurés se comparent.
+            verdicts[champ] = "mesuré sans référence"
+            mesures_seules[champ] = m
+        elif a is None or m is None:
             verdicts[champ] = "non vérifiable"
         elif isinstance(a, int) and isinstance(m, int):
             verdicts[champ] = "conforme" if a == m else "non conforme"
@@ -181,9 +187,11 @@ def compare(attendu: dict, mesure: dict, tol_mm: float = 0.5, tol_rel: float = 0
             ok = ecart <= tol_mm or (a != 0 and ecart / abs(float(a)) <= tol_rel)
             verdicts[champ] = "conforme" if ok else "non conforme"
 
-    controles = [v for v in verdicts.values() if v != "non vérifiable"]
+    controles = [v for v in verdicts.values()
+                 if v in ("conforme", "non conforme")]
     return {
         "verdicts": verdicts,
+        "mesures_seules": mesures_seules,
         "conforme": bool(controles) and all(v == "conforme" for v in controles),
         "nb_controles": len(controles),
         "nb_non_verifiables": len(verdicts) - len(controles),
