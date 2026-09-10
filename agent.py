@@ -29,6 +29,7 @@ ARTIFACTS = ROOT / "artifacts"
 MAX_TOKENS = 16000  # saturation silencieuse constatée, dimensionne d'emblée
 PLACEHOLDER = "SORTIE.step"
 CIBLE = "/work/out.step"
+MAX_TENTATIVES = 2
 
 load_dotenv()
 MODEL = os.environ["MODEL_ID"]
@@ -116,6 +117,10 @@ async def _executer(code: str) -> dict:
         return json.loads(resultat.content[0].text)
 
 
+def corriger(primitives: dict, code_fautif: str, message_erreur: str) -> str:
+    """Régénère le script à partir du code précédent et de l'erreur mesurée."""
+
+
 def pipeline(png: Path) -> dict:
     ARTIFACTS.mkdir(exist_ok=True)
     horodatage = f"{datetime.now():%Y%m%d_%H%M%S}_{png.stem[:12]}"
@@ -127,15 +132,39 @@ def pipeline(png: Path) -> dict:
 
     print("[2/3] génération du script CadQuery", flush=True)
     code = generer(primitives)
-    (ARTIFACTS / f"{horodatage}_script.py").write_text(code, encoding="utf-8")
+    rapport, tentative = None, 0
 
-    print("[3/3] exécution en sandbox", flush=True)
-    rapport = anyio.run(_executer, code)
+    while tentative < MAX_TENTATIVES:
+        tentative += 1
+        (ARTIFACTS / f"{horodatage}_script_t{tentative}.py").write_text(
+            code, encoding="utf-8")
+
+        print(f"[3/3] exécution en sandbox, tentative {tentative}", flush=True)
+        # aucun try/except ici : une ToolError signale une panne
+        # d'infrastructure, jamais une erreur de script. La laisser remonter
+        # évite de réécrire du CadQuery contre un daemon Docker arrêté.
+        rapport = anyio.run(_executer, code)
+
+        if rapport["produced"]:
+            break
+
+        message = rapport.get("error_message")
+        if message is None:
+            # Contrainte 3 : sans message à transmettre, le modèle réécrirait
+            # à l'aveugle. On s'arrête plutôt que de deviner.
+            print("arrêt : échec sans message d'erreur exploitable", flush=True)
+            break
+
+        if tentative < MAX_TENTATIVES:
+            print(f"reprise sur erreur : {message.splitlines()[0][:120]}", flush=True)
+            code = corriger(primitives, code, message)
+
+    rapport["tentatives"] = tentative
 
     print("\n--- rapport ---")
     print(json.dumps(rapport, ensure_ascii=False, indent=2))
     print(f"\nprimitives : artifacts/{horodatage}_primitives.json")
-    print(f"script     : artifacts/{horodatage}_script.py")
+    print(f"script     : artifacts/{horodatage}_script_t{rapport['tentatives']}.py")
     print(f"trous lus : {len(primitives.get('trous', []))}   "
           f"poches lues : {len(primitives.get('poches', []))}   "
           f"incertitudes : {len(primitives.get('incertitudes', []))}")
