@@ -1,0 +1,159 @@
+{
+  "piece": "piece_B",
+  "plan": "corpus/dev/piece_B_plan_2290x1619.png",
+  "reference": "corpus/dev/piece_B.step",
+  "modele": "claude-opus-5",
+  "produced": true,
+  "tentatives": 1,
+  "error_message": null,
+  "artefact": "20260910_162040_a3664b.step",
+  "primitives": {
+    "origine": "Centre de l'axe du bossage cylindrique Ø64, sur la face inférieure de la semelle (Z=0 vers le haut, X selon la longueur 140, Y selon la largeur 50)",
+    "bbox_x_mm": 140,
+    "bbox_y_mm": 50,
+    "bbox_z_mm": 50,
+    "corps": [
+      {
+        "nom": "semelle",
+        "type": "contour_extrude",
+        "profil": "Rectangle 140 x 50 avec deux échancrures rectangulaires symétriques sur les deux grands côtés : profondeur 15 chacune (largeur restante au centre 50-15-15 = 20), longueur 140-30-30 = 80 (les extrémités restent pleines sur 30 de long de chaque côté)",
+        "hauteur_extrusion_mm": 10,
+        "z_base_mm": 0,
+        "position_x_mm": 0,
+        "position_y_mm": 0
+      },
+      {
+        "nom": "bossage cylindrique",
+        "type": "cercle_extrude",
+        "profil": "Cercle Ø64",
+        "hauteur_extrusion_mm": 40,
+        "z_base_mm": 10,
+        "position_x_mm": 0,
+        "position_y_mm": 0
+      }
+    ],
+    "operation": "Union du bossage cylindrique Ø64 sur la semelle (hauteur totale 50 = 10 + 40), puis enlèvement de la poche Ø40 depuis la face supérieure",
+    "trous": [],
+    "poches": [
+      {
+        "forme": "cylindrique (alésage borgne)",
+        "diametre_mm": 40,
+        "l_x_mm": null,
+        "l_y_mm": null,
+        "profondeur_mm": 24,
+        "centre_x_mm": 0,
+        "centre_y_mm": 0,
+        "face": "face supérieure du bossage (z = 50)"
+      }
+    ],
+    "cotes_lues": [
+      {
+        "valeur": 64,
+        "designation": "diamètre extérieur du bossage cylindrique",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 40,
+        "designation": "diamètre de l'alésage borgne",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 24,
+        "designation": "profondeur de l'alésage Ø40 depuis la face supérieure",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 50,
+        "designation": "hauteur totale de la pièce",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 40,
+        "designation": "hauteur du bossage au-dessus de la face supérieure de la semelle",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 10,
+        "designation": "épaisseur de la semelle",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 30,
+        "designation": "longueur pleine de la semelle à l'extrémité gauche (avant l'échancrure)",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 30,
+        "designation": "longueur pleine de la semelle à l'extrémité droite (avant l'échancrure)",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 140,
+        "designation": "longueur totale de la semelle",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 50,
+        "designation": "largeur totale de la semelle",
+        "vue": "vue de dessus"
+      },
+      {
+        "valeur": 64,
+        "designation": "largeur du bossage (diamètre) vu de côté",
+        "vue": "vue de droite"
+      },
+      {
+        "valeur": 15,
+        "designation": "profondeur de l'échancrure latérale gauche",
+        "vue": "vue de droite"
+      },
+      {
+        "valeur": 15,
+        "designation": "profondeur de l'échancrure latérale droite",
+        "vue": "vue de droite"
+      },
+      {
+        "valeur": 50,
+        "designation": "largeur totale de la semelle",
+        "vue": "vue de droite"
+      }
+    ],
+    "incertitudes": [
+      "La longueur des échancrures latérales (80 mm) n'est pas cotée directement : elle est déduite de 140 - 30 - 30",
+      "La largeur restante au centre de la semelle (20 mm) n'est pas cotée directement : elle est déduite de 50 - 15 - 15",
+      "Le raccordement des échancrures avec le bossage Ø64 (interruption des échancrures par le cylindre) n'est pas coté",
+      "L'origine des 24 mm (mesurés depuis la face supérieure) est interprétée d'après la coupe ; le fond de l'alésage n'est pas coté par rapport à la semelle",
+      "Aucune indication de congé, chanfrein, tolérance ou état de surface n'est lisible sur le plan"
+    ]
+  },
+  "mesure_reference": {
+    "bbox_x_mm": 140.0,
+    "bbox_y_mm": 64.0,
+    "bbox_z_mm": 50.0,
+    "nb_trous_traversants": 0,
+    "nb_poches": null,
+    "volume_mm3": 160339.0462154086
+  },
+  "mesure_produit": {
+    "bbox_x_mm": 140.0,
+    "bbox_y_mm": 64.0,
+    "bbox_z_mm": 50.0,
+    "nb_trous_traversants": 0,
+    "nb_poches": null,
+    "volume_mm3": 144520.34561658205
+  },
+  "comparaison": {
+    "verdicts": {
+      "bbox_x_mm": "conforme",
+      "bbox_y_mm": "conforme",
+      "bbox_z_mm": "conforme",
+      "nb_trous_traversants": "conforme",
+      "nb_poches": "non vérifiable",
+      "volume_mm3": "non conforme"
+    },
+    "mesures_seules": {},
+    "conforme": false,
+    "nb_controles": 5,
+    "nb_non_verifiables": 1
+  }
+}

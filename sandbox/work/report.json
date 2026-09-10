@@ -1,10 +1,10 @@
 {
-  "produced": false,
-  "path": null,
-  "size_bytes": 0,
-  "returncode": 1,
+  "produced": true,
+  "path": "/work/out.step",
+  "size_bytes": 52106,
+  "returncode": 0,
   "timed_out": false,
-  "error_message": "Traceback (most recent call last):\n  File \"/work/script.py\", line 1, in <module>\n    raise RuntimeError('faute inject\u00e9e, tentative 2')\nRuntimeError: faute inject\u00e9e, tentative 2",
+  "error_message": null,
   "stdout": "",
-  "stderr": "Traceback (most recent call last):\n  File \"/work/script.py\", line 1, in <module>\n    raise RuntimeError('faute inject\u00e9e, tentative 2')\nRuntimeError: faute inject\u00e9e, tentative 2\n"
+  "stderr": ""
 }

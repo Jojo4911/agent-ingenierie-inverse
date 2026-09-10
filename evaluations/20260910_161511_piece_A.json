@@ -1,0 +1,124 @@
+{
+  "piece": "piece_A",
+  "plan": "corpus/dev/piece_A_plan_2290x1619.png",
+  "reference": "corpus/dev/piece_A.step",
+  "modele": "claude-opus-5",
+  "produced": true,
+  "tentatives": 1,
+  "error_message": null,
+  "artefact": "20260910_161534_3b7630.step",
+  "primitives": {
+    "origine": "Coin inférieur gauche de la plaque dans la vue de face, face avant (z=0)",
+    "bbox_x_mm": 84,
+    "bbox_y_mm": 52,
+    "bbox_z_mm": 12,
+    "corps": [
+      {
+        "nom": "plaque",
+        "type": "contour_extrude",
+        "profil": "rectangle 84 x 52 mm",
+        "hauteur_extrusion_mm": 12,
+        "z_base_mm": 0,
+        "position_x_mm": 0,
+        "position_y_mm": 0
+      }
+    ],
+    "operation": "corps unique, percé de deux trous traversants",
+    "trous": [
+      {
+        "diametre_mm": 8.5,
+        "centre_x_mm": 18,
+        "centre_y_mm": 14,
+        "face": "face avant de la plaque (vue de face)"
+      },
+      {
+        "diametre_mm": 8.5,
+        "centre_x_mm": 66,
+        "centre_y_mm": 38,
+        "face": "face avant de la plaque (vue de face)"
+      }
+    ],
+    "poches": [],
+    "cotes_lues": [
+      {
+        "valeur": 84,
+        "designation": "longueur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 52,
+        "designation": "hauteur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 12,
+        "designation": "épaisseur de la plaque",
+        "vue": "vue de côté"
+      },
+      {
+        "valeur": 8.5,
+        "designation": "diamètre du trou inférieur gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 8.5,
+        "designation": "diamètre du trou supérieur droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 18,
+        "designation": "distance du bord gauche à l'axe du trou inférieur gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 14,
+        "designation": "distance du bord inférieur à l'axe du trou inférieur gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 66,
+        "designation": "distance du bord gauche à l'axe du trou supérieur droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 38,
+        "designation": "distance du bord inférieur à l'axe du trou supérieur droit",
+        "vue": "vue de face"
+      }
+    ],
+    "incertitudes": [
+      "Les lignes en tirets sur la vue de côté correspondent probablement aux traces des trous traversants, mais aucune cote de profondeur n'y figure ; le caractère traversant est déduit de cette représentation.",
+      "Aucune indication de matière, tolérances ou état de surface n'est lisible sur le plan."
+    ]
+  },
+  "mesure_reference": {
+    "bbox_x_mm": 84.0,
+    "bbox_y_mm": 52.0,
+    "bbox_z_mm": 12.0,
+    "nb_trous_traversants": 2,
+    "nb_poches": null,
+    "volume_mm3": 51054.119584668784
+  },
+  "mesure_produit": {
+    "bbox_x_mm": 84.0,
+    "bbox_y_mm": 52.0,
+    "bbox_z_mm": 12.0,
+    "nb_trous_traversants": 2,
+    "nb_poches": null,
+    "volume_mm3": 51054.11958466878
+  },
+  "comparaison": {
+    "verdicts": {
+      "bbox_x_mm": "conforme",
+      "bbox_y_mm": "conforme",
+      "bbox_z_mm": "conforme",
+      "nb_trous_traversants": "conforme",
+      "nb_poches": "non vérifiable",
+      "volume_mm3": "conforme"
+    },
+    "mesures_seules": {},
+    "conforme": true,
+    "nb_controles": 5,
+    "nb_non_verifiables": 1
+  }
+}

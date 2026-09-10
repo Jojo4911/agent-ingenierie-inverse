@@ -1,0 +1,200 @@
+{
+  "piece": "piece_C",
+  "plan": "corpus/dev/piece_C_plan_2290x1619.png",
+  "reference": "corpus/dev/piece_C.step",
+  "modele": "claude-opus-5",
+  "produced": true,
+  "tentatives": 1,
+  "error_message": null,
+  "artefact": "20260910_162725_e0c8e6.step",
+  "primitives": {
+    "origine": "Coin inférieur gauche de la plaque en vue de face, face arrière (z=0) ; X vers la droite, Y vers le haut, Z vers l'observateur",
+    "bbox_x_mm": 120,
+    "bbox_y_mm": 80,
+    "bbox_z_mm": 15,
+    "corps": [
+      {
+        "nom": "plaque",
+        "type": "contour_extrude",
+        "profil": "rectangle 120 x 80 mm",
+        "hauteur_extrusion_mm": 15,
+        "z_base_mm": 0,
+        "position_x_mm": 60,
+        "position_y_mm": 40
+      }
+    ],
+    "operation": "corps unique ; les trous et poches sont soustraits de la plaque",
+    "trous": [
+      {
+        "diametre_mm": 8,
+        "centre_x_mm": 15,
+        "centre_y_mm": 15,
+        "face": "face avant (vue de face), traversant"
+      },
+      {
+        "diametre_mm": 8,
+        "centre_x_mm": 105,
+        "centre_y_mm": 15,
+        "face": "face avant (vue de face), traversant"
+      },
+      {
+        "diametre_mm": 8,
+        "centre_x_mm": 15,
+        "centre_y_mm": 65,
+        "face": "face avant (vue de face), traversant"
+      },
+      {
+        "diametre_mm": 8,
+        "centre_x_mm": 105,
+        "centre_y_mm": 65,
+        "face": "face avant (vue de face), traversant"
+      }
+    ],
+    "poches": [
+      {
+        "forme": "rectangulaire",
+        "diametre_mm": null,
+        "l_x_mm": 40,
+        "l_y_mm": 25,
+        "profondeur_mm": 6,
+        "centre_x_mm": 55,
+        "centre_y_mm": 37.5,
+        "face": "face avant (vue de face)"
+      },
+      {
+        "forme": "cylindrique borgne",
+        "diametre_mm": 12,
+        "l_x_mm": null,
+        "l_y_mm": null,
+        "profondeur_mm": 8,
+        "centre_x_mm": 85,
+        "centre_y_mm": 60,
+        "face": "face avant (vue de face)"
+      }
+    ],
+    "cotes_lues": [
+      {
+        "valeur": 120,
+        "designation": "longueur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 80,
+        "designation": "hauteur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 15,
+        "designation": "épaisseur de la plaque",
+        "vue": "vue de droite"
+      },
+      {
+        "valeur": 85,
+        "designation": "position en X du trou Ø12 depuis le bord gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 60,
+        "designation": "position en Y du trou Ø12 depuis le bord inférieur",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 15,
+        "designation": "position en X des trous Ø8 gauche depuis le bord gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 90,
+        "designation": "entraxe horizontal des trous Ø8",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 15,
+        "designation": "position en Y des trous Ø8 inférieurs depuis le bord inférieur",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 50,
+        "designation": "entraxe vertical des trous Ø8",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 35,
+        "designation": "distance bord gauche → bord gauche de la poche rectangulaire",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 40,
+        "designation": "largeur (X) de la poche rectangulaire, tolérance ±0,1",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 25,
+        "designation": "hauteur (Y) de la poche rectangulaire (chaîne de cotes 25+25)",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 25,
+        "designation": "distance bord inférieur → bord inférieur de la poche (chaîne de cotes 25+25)",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 6,
+        "designation": "profondeur de la poche rectangulaire (symbole ▼6)",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 8,
+        "designation": "profondeur mesurée sur l'axe du Ø12 (perçage borgne)",
+        "vue": "vue de dessus"
+      },
+      {
+        "valeur": 12,
+        "designation": "diamètre du perçage central",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 8,
+        "designation": "diamètre des 4 perçages (4x Ø8)",
+        "vue": "vue de face"
+      }
+    ],
+    "incertitudes": [
+      "La cote '8' de la vue de dessus n'est pas explicitement rattachée à un élément : interprétée comme la profondeur du perçage Ø12 (borgne) ; il pourrait s'agir d'une autre cote de profondeur.",
+      "La répartition de la chaîne verticale 25 + 25 (hauteur de poche / distance au bord bas) est déduite du tracé ; le graphisme ne correspond pas exactement (poche dessinée légèrement plus haute).",
+      "La face d'usinage de la poche ▼6 et du perçage Ø12 (avant ou arrière) n'est pas déterminable avec certitude à partir des vues fournies.",
+      "Aucune indication de matière, de traitement ni de rayons de congé ; état de surface Ra 3,2 indiqué par un repère sur la vue de dessus sans précision de la zone exacte.",
+      "Le trou Ø12 est supposé borgne (profondeur 8 < épaisseur 15) et classé en poche."
+    ]
+  },
+  "mesure_reference": {
+    "bbox_x_mm": 120.0,
+    "bbox_y_mm": 80.0,
+    "bbox_z_mm": 15.0,
+    "nb_trous_traversants": 4,
+    "nb_poches": null,
+    "volume_mm3": 134079.29236831993
+  },
+  "mesure_produit": {
+    "bbox_x_mm": 120.0,
+    "bbox_y_mm": 80.0,
+    "bbox_z_mm": 15.0,
+    "nb_trous_traversants": 4,
+    "nb_poches": null,
+    "volume_mm3": 134079.29236832002
+  },
+  "comparaison": {
+    "verdicts": {
+      "bbox_x_mm": "conforme",
+      "bbox_y_mm": "conforme",
+      "bbox_z_mm": "conforme",
+      "nb_trous_traversants": "conforme",
+      "nb_poches": "non vérifiable",
+      "volume_mm3": "conforme"
+    },
+    "mesures_seules": {},
+    "conforme": true,
+    "nb_controles": 5,
+    "nb_non_verifiables": 1
+  }
+}
