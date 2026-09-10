@@ -1,0 +1,217 @@
+{
+  "piece": "piece_E",
+  "plan": "corpus/holdout/piece_E_plan_1619x2290.png",
+  "reference": "corpus/holdout/piece_E.step",
+  "modele": "claude-opus-5",
+  "produced": true,
+  "tentatives": 1,
+  "error_message": null,
+  "artefact": "20260910_203348_774912.step",
+  "primitives": {
+    "origine": "Coin inférieur gauche de la vue de face (x vers la droite, y vers le haut), z=0 sur la face arrière, épaisseur vers l'avant",
+    "bbox_x_mm": 90,
+    "bbox_y_mm": 60,
+    "bbox_z_mm": 20,
+    "corps": [
+      {
+        "nom": "plaque principale",
+        "type": "contour_extrude",
+        "profil": "Contour rectangulaire 90 x 60 avec deux chanfreins aux angles supérieurs : 20 horizontal x 20 vertical de chaque côté (arête supérieure de 50)",
+        "hauteur_extrusion_mm": 20,
+        "z_base_mm": 0,
+        "position_x_mm": 0,
+        "position_y_mm": 0
+      }
+    ],
+    "operation": "Corps unique ; les trous et poches sont soustraits de la plaque",
+    "trous": [
+      {
+        "diametre_mm": 10,
+        "centre_x_mm": 10,
+        "centre_y_mm": 10,
+        "face": "face avant (traversant l'épaisseur de 20)"
+      },
+      {
+        "diametre_mm": 10,
+        "centre_x_mm": 80,
+        "centre_y_mm": 10,
+        "face": "face avant (traversant l'épaisseur de 20)"
+      }
+    ],
+    "poches": [
+      {
+        "forme": "carrée",
+        "diametre_mm": null,
+        "l_x_mm": 25,
+        "l_y_mm": 25,
+        "profondeur_mm": 5,
+        "centre_x_mm": 45,
+        "centre_y_mm": 37.5,
+        "face": "face avant (côté coté 5 dans la coupe A-A)"
+      },
+      {
+        "forme": "circulaire",
+        "diametre_mm": 14,
+        "l_x_mm": null,
+        "l_y_mm": null,
+        "profondeur_mm": 12,
+        "centre_x_mm": 45,
+        "centre_y_mm": 12,
+        "face": "face avant (côté coté 12 dans la coupe A-A)"
+      }
+    ],
+    "cotes_lues": [
+      {
+        "valeur": 90,
+        "designation": "largeur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 60,
+        "designation": "hauteur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "épaisseur de la plaque",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 20,
+        "designation": "retrait horizontal du chanfrein supérieur gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "retrait horizontal du chanfrein supérieur droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "retrait vertical du chanfrein supérieur gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "retrait vertical du chanfrein supérieur droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance bord gauche → axe du trou Ø10 gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 35,
+        "designation": "entraxe trou Ø10 gauche → trou central Ø14",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 35,
+        "designation": "entraxe trou central Ø14 → trou Ø10 droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance axe du trou Ø10 droit → bord droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "hauteur de l'axe du trou Ø10 gauche depuis le bord inférieur",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "hauteur de l'axe du trou Ø10 droit depuis le bord inférieur",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 12,
+        "designation": "hauteur de l'axe du trou Ø14 depuis le bord inférieur",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "Ø des deux trous latéraux",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 14,
+        "designation": "Ø du trou/logement central",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 32.5,
+        "designation": "distance bord gauche → côté gauche de la poche carrée",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 25,
+        "designation": "largeur de la poche carrée",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 25,
+        "designation": "hauteur de la poche carrée",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance bord supérieur → côté supérieur de la poche carrée",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 5,
+        "designation": "profondeur de la poche carrée",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 12,
+        "designation": "profondeur du logement Ø14",
+        "vue": "coupe A-A"
+      },
+      {
+        "valeur": 20,
+        "designation": "largeur (épaisseur) de la section",
+        "vue": "coupe A-A"
+      }
+    ],
+    "incertitudes": [
+      "La face d'entrée des poches (avant ou arrière) n'est pas déterminable sans ambiguïté à partir du sens des flèches de coupe ; hypothèse : même face pour la poche carrée (5) et le logement Ø14 (12).",
+      "Le trou central Ø14 est interprété comme borgne (profondeur 12) d'après la coupe A-A, alors que la vue de face le représente comme un cercle simple ; aucune indication explicite 'borgne' n'est portée.",
+      "Aucune cote de position en z pour les poches autre que leur profondeur.",
+      "Aucune indication de tolérance, d'état de surface ou de matière sur le plan."
+    ]
+  },
+  "mesure_reference": {
+    "bbox_x_mm": 90.0,
+    "bbox_y_mm": 60.000000000000014,
+    "bbox_z_mm": 20.0,
+    "nb_trous_traversants": 2,
+    "nb_poches": null,
+    "volume_mm3": 91886.15086609941
+  },
+  "mesure_produit": {
+    "bbox_x_mm": 90.0,
+    "bbox_y_mm": 60.0,
+    "bbox_z_mm": 20.0,
+    "nb_trous_traversants": 2,
+    "nb_poches": null,
+    "volume_mm3": 91886.15086609921
+  },
+  "comparaison": {
+    "verdicts": {
+      "bbox_x_mm": "conforme",
+      "bbox_y_mm": "conforme",
+      "bbox_z_mm": "conforme",
+      "nb_trous_traversants": "conforme",
+      "nb_poches": "non vérifiable",
+      "volume_mm3": "conforme"
+    },
+    "mesures_seules": {},
+    "conforme": true,
+    "nb_controles": 5,
+    "nb_non_verifiables": 1
+  }
+}

@@ -1,32 +1,50 @@
 import cadquery as cq
 
-# Plaque de base : 120 x 80 x 15, coin inférieur gauche à l'origine, z de 0 à 15
-result = cq.Workplane("XY").box(120, 80, 15, centered=(False, False, False))
+# Profil de la plaque principale (vue de face, x vers la droite, y vers le haut)
+profil_points = [
+    (0.0, 0.0),
+    (90.0, 0.0),
+    (90.0, 40.0),
+    (70.0, 60.0),
+    (20.0, 60.0),
+    (0.0, 40.0),
+]
 
-# 4 trous traversants Ø8
+epaisseur = 20.0
+
+result = (
+    cq.Workplane("XY")
+    .polyline(profil_points)
+    .close()
+    .extrude(epaisseur)
+)
+
+# Trous Ø10 traversants
 result = (
     result.faces(">Z")
     .workplane(origin=(0, 0, 0))
-    .pushPoints([(15, 15), (105, 15), (15, 65), (105, 65)])
-    .hole(8)
+    .pushPoints([(10.0, 10.0), (80.0, 10.0)])
+    .hole(10.0)
 )
 
-# Poche rectangulaire 40 x 25, profondeur 6, depuis la face avant (z = 15)
-result = (
-    result.faces(">Z")
-    .workplane(origin=(0, 0, 0))
-    .center(55, 37.5)
-    .rect(40, 25)
-    .cutBlind(-6)
+# Poche carree 25 x 25, profondeur 5, depuis la face avant (z = 20)
+poche_carree = (
+    cq.Workplane("XY")
+    .workplane(offset=epaisseur - 5.0)
+    .center(45.0, 37.5)
+    .rect(25.0, 25.0)
+    .extrude(5.0)
 )
+result = result.cut(poche_carree)
 
-# Perçage borgne Ø12, profondeur 8, depuis la face avant (z = 15)
-result = (
-    result.faces(">Z")
-    .workplane(origin=(0, 0, 0))
-    .center(85, 60)
-    .circle(6)
-    .cutBlind(-8)
+# Logement circulaire Ø14, profondeur 12, depuis la face avant (z = 20)
+logement_circ = (
+    cq.Workplane("XY")
+    .workplane(offset=epaisseur - 12.0)
+    .center(45.0, 12.0)
+    .circle(14.0 / 2.0)
+    .extrude(12.0)
 )
+result = result.cut(logement_circ)
 
 cq.exporters.export(result, "/work/out.step")

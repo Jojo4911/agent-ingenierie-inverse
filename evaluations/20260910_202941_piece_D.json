@@ -1,0 +1,196 @@
+{
+  "piece": "piece_D",
+  "plan": "corpus/holdout/piece_D_plan_1619x2290.png",
+  "reference": "corpus/holdout/piece_D.step",
+  "modele": "claude-opus-5",
+  "produced": true,
+  "tentatives": 1,
+  "error_message": null,
+  "artefact": "20260910_203046_a9bb09.step",
+  "primitives": {
+    "origine": "Coin inférieur gauche de la pièce dans la vue de face, face avant (z=0 sur la face arrière, épaisseur suivant +Z)",
+    "bbox_x_mm": 70,
+    "bbox_y_mm": 100,
+    "bbox_z_mm": 10,
+    "corps": [
+      {
+        "nom": "plaque en U",
+        "type": "contour_extrude",
+        "profil": "Rectangle 70 x 100 avec une encoche débouchante en haut de 30 (X) x 50 (Y), encoche située entre x=20 et x=50, du haut (y=100) jusqu'à y=50",
+        "hauteur_extrusion_mm": 10,
+        "z_base_mm": 0,
+        "position_x_mm": 35,
+        "position_y_mm": 50
+      }
+    ],
+    "operation": "Corps unique",
+    "trous": [
+      {
+        "diametre_mm": 6,
+        "centre_x_mm": 10,
+        "centre_y_mm": 85,
+        "face": "face avant (plaque), traversant"
+      },
+      {
+        "diametre_mm": 6,
+        "centre_x_mm": 60,
+        "centre_y_mm": 85,
+        "face": "face avant (plaque), traversant"
+      },
+      {
+        "diametre_mm": 6,
+        "centre_x_mm": 35,
+        "centre_y_mm": 10,
+        "face": "face avant (plaque), traversant"
+      }
+    ],
+    "poches": [
+      {
+        "forme": "rectangulaire",
+        "diametre_mm": null,
+        "l_x_mm": 30,
+        "l_y_mm": 20,
+        "profondeur_mm": 4,
+        "centre_x_mm": 35,
+        "centre_y_mm": 30,
+        "face": "face principale de la plaque (une seule face, voir coupe A-A)"
+      }
+    ],
+    "cotes_lues": [
+      {
+        "valeur": 100,
+        "designation": "hauteur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 70,
+        "designation": "largeur totale de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "épaisseur de la plaque",
+        "vue": "vue de droite"
+      },
+      {
+        "valeur": 20,
+        "designation": "largeur de la branche gauche (bord gauche → encoche)",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 30,
+        "designation": "largeur de l'encoche supérieure",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "largeur de la branche droite (encoche → bord droit)",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 50,
+        "designation": "profondeur de l'encoche supérieure depuis le bord haut",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 15,
+        "designation": "distance du bord supérieur aux axes des deux trous Ø6 hauts",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance du bord gauche à l'axe du trou Ø6 haut gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance du bord droit à l'axe du trou Ø6 haut droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 6,
+        "designation": "diamètre du trou haut gauche",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 6,
+        "designation": "diamètre du trou haut droit",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 6,
+        "designation": "diamètre du trou bas",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 35,
+        "designation": "distance du bord gauche à l'axe du trou Ø6 bas",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 10,
+        "designation": "distance du bord inférieur à l'axe du trou Ø6 bas",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "distance du bord gauche au bord gauche de la poche rectangulaire",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 30,
+        "designation": "longueur (X) de la poche rectangulaire",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "hauteur (Y) de la poche rectangulaire",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 20,
+        "designation": "distance du bas de la poche au bord inférieur de la plaque",
+        "vue": "vue de face"
+      },
+      {
+        "valeur": 4,
+        "designation": "profondeur de la poche",
+        "vue": "coupe A-A (1:1)"
+      }
+    ],
+    "incertitudes": [
+      "La face sur laquelle est usinée la poche (avant ou arrière) n'est pas explicitement identifiée : la coupe A-A la montre du côté supérieur du profil coupé, mais l'orientation de la coupe reste ambiguë.",
+      "La cote de 20 mm à droite indiquant la hauteur de la poche est lue comme la hauteur de la poche ; son extension exacte (entre quelles arêtes) est déduite du tracé."
+    ]
+  },
+  "mesure_reference": {
+    "bbox_x_mm": 70.0,
+    "bbox_y_mm": 100.0,
+    "bbox_z_mm": 10.0,
+    "nb_trous_traversants": 3,
+    "nb_poches": null,
+    "volume_mm3": 51751.76998353074
+  },
+  "mesure_produit": {
+    "bbox_x_mm": 70.0,
+    "bbox_y_mm": 100.0,
+    "bbox_z_mm": 10.0,
+    "nb_trous_traversants": 3,
+    "nb_poches": null,
+    "volume_mm3": 51751.76998353073
+  },
+  "comparaison": {
+    "verdicts": {
+      "bbox_x_mm": "conforme",
+      "bbox_y_mm": "conforme",
+      "bbox_z_mm": "conforme",
+      "nb_trous_traversants": "conforme",
+      "nb_poches": "non vérifiable",
+      "volume_mm3": "conforme"
+    },
+    "mesures_seules": {},
+    "conforme": true,
+    "nb_controles": 5,
+    "nb_non_verifiables": 1
+  }
+}
