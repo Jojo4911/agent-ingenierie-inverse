@@ -118,7 +118,38 @@ async def _executer(code: str) -> dict:
 
 
 def corriger(primitives: dict, code_fautif: str, message_erreur: str) -> str:
-    """Régénère le script à partir du code précédent et de l'erreur mesurée."""
+    """Corrige le script de la tentative précédente à partir de l'erreur mesurée.
+
+    code_fautif arrive avec le chemin du sandbox, substitué par generer().
+    On rétablit le placeholder avant l'envoi : le modèle ne voit qu'un seul
+    chemin de sortie, celui qu'exige le prompt de génération.
+    """
+    code_envoye = code_fautif.replace(CIBLE, PLACEHOLDER)
+    message = client.messages.create(
+        model=MODEL,
+        max_tokens=MAX_TOKENS,
+        messages=[{
+            "role": "user",
+            "content": (
+                (PROMPTS / "prompt_correction.txt").read_text(encoding="utf-8")
+                + "\n\nJSON :\n"
+                + json.dumps(primitives, ensure_ascii=False, indent=2)
+                + "\n\nPrompt de génération :\n"
+                + (PROMPTS / "prompt_generation.txt").read_text(encoding="utf-8")
+                + "\n\nCode fautif :\n"
+                + code_envoye
+                + "\n\nMessage d'erreur :\n"
+                + message_erreur
+            ),
+        }],
+    )
+    code = _sans_balises(_texte(message))
+    if PLACEHOLDER not in code:
+        raise RuntimeError(
+            f"placeholder {PLACEHOLDER} absent du code corrigé. Le script n'écrirait "
+            "nulle part et le sandbox rendrait un faux signal d'arrêt de boucle."
+        )
+    return code.replace(PLACEHOLDER, CIBLE)
 
 
 def pipeline(png: Path) -> dict:

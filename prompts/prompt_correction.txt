@@ -1,0 +1,7 @@
+Tu reçois :
+1. La description géométrique d'une pièce mécanique en JSON.
+2. Le prompt de génération général d'une pièce mécanique en utilisant CadQuery.
+3. Le code CadQuery d'une tentative précédente. Il a été exécuté et n'a produit aucun fichier.
+4. Le message d'erreur renvoyé par cette exécution.
+
+Tu dois CORRIGER le script Python en suivant les instructions du prompt de génération, en analysant le code fautif et en prenant en compte le message d'erreur.
