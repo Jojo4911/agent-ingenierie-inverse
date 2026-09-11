@@ -1,5 +1,67 @@
 # Rapport de conduite de projet : agent d'ingénierie inverse
 
+## 1. Contexte et analyse des besoins
+
+### 1.1 Présentation du contexte
+
+#### Le besoin métier
+
+Dans l'industrie, les échanges entre entreprises passent encore largement par des plans 2D, papier ou PDF : les logiciels de CAO et leurs versions diffèrent d'un partenaire à l'autre, et le plan reste le format commun. Quand le destinataire a besoin du modèle 3D d'une pièce, pour la fabriquer, la modifier ou la présenter, il doit le reconstruire à la main à partir du plan.
+
+Le contexte retenu est celui de l'ameublement et de la conception bois, que l'auteur connaît par son parcours en bureau d'études et chez EFICAD. EFICAD édite une suite de compléments à SolidWorks pour la conception paramétrique et la fabrication dans l'industrie de l'ameublement. Chez EFICAD, la reconstruction 3D sert l'avant-vente : l'équipe modélise la pièce d'un prospect à partir de ses plans, pour lui faire une démonstration sur son propre modèle.
+
+#### Maturité IA
+
+Le processus est entièrement manuel, et aucun outil d'automatisation n'est en usage chez EFICAD (§1.2, Q7). Un outil d'IA dédié à cette tâche existe depuis peu dans SolidWorks. Selon l'interlocuteur, EFICAD, éditeur de compléments et non de SolidWorks lui-même, n'est pas autorisé à l'utiliser. La maturité IA sur ce processus est donc nulle pour cet acteur, alors qu'une solution existe dans son écosystème.
+
+#### Contraintes
+
+- **Confidentialité** : les plans clients sont sensibles, avec un niveau d'exigence élevé et des règles qui varient d'un client à l'autre (Q9, Q10). L'envoi d'un plan à un modèle hébergé hors de l'entreprise n'est donc pas neutre.
+- **Format de sortie** : le STEP est le format le plus exploitable (Q11).
+- **Matériel** : l'exécution locale d'un modèle de vision est bornée par un GPU de 8 Go de VRAM, contrainte traitée au §3.
+
+### 1.2 Collecte et analyse du besoin métier
+
+#### Méthode et partie prenante
+
+Le besoin a été recueilli le 8 septembre 2026 à 16 h, par un entretien individuel sur un questionnaire ouvert de 13 questions préparées à l'avance. L'interlocuteur est Olivier Guérin, manager technique d'EFICAD, qui a accepté d'être nommé. L'expérience de l'auteur en CAO sert de seconde source, notamment pour les ordres de grandeur du §2. Dans ce rapport, Qn renvoie au numéro de la question.
+
+Limite assumée : un seul interlocuteur, dans une seule entreprise, et des réponses déclaratives. Les chiffres qui en sont tirés sont des estimations d'un praticien, pas des mesures.
+
+#### Ce que dit l'entretien
+
+- **Processus** (Q1) : entièrement manuel dans SolidWorks. Esquisses, puis extrusions, balayages ou révolutions, en alternant lecture du plan et modélisation.
+- **Fréquence et acteurs** (Q2, Q4) : environ une fois par mois. L'équipe d'avant-vente s'en charge elle-même, à partir des plans du client.
+- **Durée** (Q3) : non chiffrée par l'interlocuteur, qui la dit très dépendante de la complexité de la pièce.
+- **Coût principal** (Q5) : la modélisation, plus que la lecture du plan ou la ressaisie des cotes.
+- **Défaillance principale** (Q6) : les cotes manquantes sur le plan.
+- **Qualité des plans** (Q8) : en général des PDF plutôt bien normalisés, avec trois vues et parfois une vue isométrique, mais une qualité variable.
+- **Seuil d'acceptabilité** (Q12) : un modèle correct à 95 % serait « très utile », car « une grande partie de la tâche est de vérifier ». Le seuil plancher n'a pas été chiffré.
+- **Cible de valeur** (Q13) : les pièces complexes, plutôt que les pièces simples et répétitives.
+
+#### Hiérarchisation des besoins
+
+| Besoin | Source | Impact | Effort | Traitement dans le projet |
+|---|---|---|---|---|
+| Sortie STEP exploitable | Q11 | fort | faible | couvert |
+| Automatiser la modélisation | Q5 | fort | moyen | couvert sur la géométrie bornée du §1.3 |
+| Faciliter la vérification humaine | Q12 | fort | moyen | partiel : conformité mesurée contre une vérité terrain en évaluation seulement, perspective au §6 |
+| Garantir la confidentialité des plans | Q9, Q10 | fort, bloquant selon le client | élevé | non couvert par le POC, comparatif au §3 |
+| Signaler les cotes manquantes | Q6 | fort | élevé | hors périmètre |
+| Traiter les pièces complexes | Q1, Q13 | fort | élevé | hors périmètre, phase ultérieure |
+| Accepter des plans de qualité variable | Q8 | moyen | élevé | hors périmètre après le test de la pièce C |
+
+Le projet traite d'abord les besoins à fort impact et à effort faible ou moyen. Les besoins à fort impact et à effort élevé sont documentés et reportés, pas ignorés.
+
+### 1.3 Périmètre retenu
+
+- **Géométrie** : contours extrudés, trous traversants et borgnes, poches rectangulaires. Sont exclus les congés, les filetages, les révolutions et les assemblages.
+- **Entrée** : plans PDF propres et normalisés, ce qui correspond au cas général décrit en Q8. Cette restriction découle du test de la pièce C (T28), un plan réaliste avec cartouche, tolérances et chaînes de cotes, et de la règle d'interprétation fixée avant son exécution. C'est une décision de cadrage, pas un échec du projet.
+- **Sortie** : un fichier STEP.
+- **Modèle** : un modèle de vision appelé par API, sur des plans non confidentiels dessinés ou redessinés par l'auteur. Un usage sur des plans clients suppose de lever la contrainte de confidentialité (§3).
+
+Tension assumée : l'entretien place la valeur sur les pièces complexes (Q13), et le processus réel mobilise des balayages et des révolutions (Q1), exclus ici. Le projet est une preuve de faisabilité de la chaîne complète (lecture du plan, primitives, génération, vérification) sur une géométrie bornée. Il ne démontre pas la valeur métier sur les pièces complexes, qui relève d'une phase ultérieure.
+
 ## 5. Contrôle et suivi
 
 Le projet est piloté par budgets fixes et règles décidées d'avance : le périmètre s'ajuste au temps disponible, jamais l'inverse. Chaque règle d'arrêt a été écrite avant la mesure qui pouvait la déclencher.
