@@ -117,6 +117,101 @@ flowchart TD
 
 Deux points forts du processus manuel sont à préserver : la confidentialité totale et la couverture géométrique complète. Toute solution cible qui recule sur l'un d'eux doit l'assumer explicitement (§3).
 
+## 3. Identification de la solution technique cible
+
+### 3.1 Comparatif des approches
+
+Quatre approches ont été comparées sur les critères du §2.2, à partir de l'entretien, de l'expérience de l'auteur et des mesures du spike. Seule l'approche retenue a été implémentée.
+
+| Approche | Avantages | Inconvénients | Verdict |
+|---|---|---|---|
+| A. Outil d'IA intégré au logiciel de CAO | intégré à l'outil de l'opérateur, aucun développement | inaccessible à EFICAD selon l'interlocuteur (Q7) ; fiabilité non mesurable de l'extérieur | écartée pour cet acteur |
+| B. OCR puis règles de reconstruction | local, déterministe, peu coûteux à l'exécution | texte des plans rarement sélectionnable (§2.1) ; l'OCR lit des valeurs sans les rattacher à la géométrie ; règles à écrire pour chaque configuration de vues | écartée : traite la lecture, pas la compréhension de la pièce |
+| C. Génération directe du script CAO depuis l'image | un seul appel au modèle, chaîne la plus courte | une erreur ne se localise pas entre lecture et génération ; le modèle calcule lui-même les grandeurs dérivées | écartée |
+| D. Primitives, puis génération, exécution isolée et vérification | un artefact inspectable à chaque étape ; grandeurs dérivées recalculées en aval ; échec localisable | trois appels au modèle au lieu d'un ; davantage de composants | retenue |
+
+Le spike a validé l'approche D sur des étapes découplées (`verdict_spike.md`, sections 2 et 5). Il classait les deux erreurs de la pièce B parmi les valeurs dérivées. Les runs finaux corrigent ce classement pour l'une d'elles : l'erreur de boîte englobante (cote bbox_y lue 50 au lieu de 64) est neutralisée par le recalcul en aval, mais l'erreur de position du cylindre Ø64 a survécu au schéma à primitives, et relevait donc de la géométrie. Le verdict reste en annexe tel quel, cette mesure le complète (`rapport_evaluation.md`, section 1).
+
+### 3.2 Modèle par API contre modèle local ouvert
+
+Comparaison argumentée sur spécifications et publications, sans implémentation.
+
+| Critère | Modèle par API, retenu pour le POC | Modèle local ouvert, option de production |
+|---|---|---|
+| Performance sur la tâche | mesurée sur le corpus (`rapport_evaluation.md`, section 2) | non mesurée ; un petit modèle affiné peut dépasser les grands modèles généralistes en extraction d'annotations de plans, au prix d'un jeu annoté [3] |
+| Confidentialité | le plan est transmis à un tiers ; pas d'entraînement sans permission expresse, rétention nulle possible par accord [1] : une garantie contractuelle, pas technique | le plan ne quitte pas le poste, comme dans le processus manuel (§2.2) |
+| Matériel | aucun | GPU de 8 Go de VRAM : les poids de Qwen3-VL-8B-Instruct pèsent 17,5 Go dans leur format publié [2] ; une quantification en 4 bits est indispensable et laisse peu de mémoire aux jetons visuels d'un plan en haute résolution (estimation de l'auteur, non mesurée) |
+| Coût | à l'appel, non mesuré dans les traces du projet (§4.2) | matériel et temps d'ingénierie ; coût marginal faible |
+| Mise en œuvre | un SDK et une clé | quantification, serveur d'inférence, affinage éventuel |
+| Maintenance | versions du modèle décidées par le fournisseur | versions figées et maîtrisées |
+
+**Décision.** L'API est retenue pour le POC : la question du projet était la faisabilité de la chaîne complète (§1.3), sur des plans non confidentiels, et un modèle de premier plan attribue un éventuel échec à l'architecture plutôt qu'au modèle. En production sous forte contrainte de confidentialité (Q9, Q10), deux voies existent :
+
+- une API sous accord de rétention nulle, acceptable ou non selon le client ;
+- un modèle local, sous deux conditions : un jeu de plans annotés pour l'affinage, et une évaluation sur un jeu de test neuf, le jeu tenu à l'écart de ce projet étant consommé (T43).
+
+Limite de la source [3] : elle porte sur la lecture d'annotations, pas sur la compréhension de la géométrie, qui est le risque identifié par le spike (`verdict_spike.md`, section 3), et elle compare des modèles de 2024.
+
+Sources, consultées le 11/09/2026 :
+
+1. Anthropic, *API and data retention*, documentation Claude Platform : https://platform.claude.com/docs/en/manage-claude/api-and-data-retention
+2. Qwen, dépôt *Qwen3-VL-8B-Instruct*, Hugging Face : https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct
+3. *Fine-Tuning Vision-Language Model for Automated Engineering Drawing Information Extraction*, arXiv 2411.03707, 2024 : https://arxiv.org/abs/2411.03707
+
+### 3.3 Architecture cible
+
+```mermaid
+flowchart LR
+    subgraph Poste["Poste de l'utilisateur"]
+        P["Plan 2D (PNG)"] --> AG["agent.py : orchestration, reprise bornée"]
+        AG --> PR["Primitives (JSON)"]
+        AG --> S["Script CadQuery"]
+        S --> MCP["mcp_server.py : serveur MCP"]
+        STEP["Fichier STEP"]
+    end
+    subgraph Ext["Service externe : API Anthropic"]
+        M["Modèle claude-opus-5"]
+    end
+    subgraph Box["Conteneur Docker cq-sandbox"]
+        R["run_cadquery.py"]
+    end
+    subgraph Eval["Évaluation, hors usage : exige une référence"]
+        V["Mesure : boîte englobante, trous, volume"] --> C["Comparaison au STEP de référence"] --> T["Trace JSON (evaluations/)"]
+    end
+    AG -->|"extraction, génération, correction"| M
+    MCP --> R --> STEP
+    MCP -->|"échec avec message : une correction au plus"| AG
+    STEP --> V
+```
+
+Trois zones de confiance. Seul le flux vers l'API quitte le poste : le plan, les primitives et les scripts. Le code produit par le modèle ne s'exécute que dans le conteneur. La clé d'API est lue dans un fichier `.env` non versionné. Les pannes d'infrastructure remontent sans reprise ; seuls les échecs du code, porteurs d'un message, déclenchent une correction. Limite : le conteneur est lancé sans isolement réseau ni limite de mémoire ou de processeur, seul un délai maximal borne l'exécution. Ce durcissement relève de l'industrialisation (§4).
+
+### 3.4 Justification des choix technologiques
+
+| Choix | Justification | Élément mesuré |
+|---|---|---|
+| Le modèle ne produit que des primitives (contrainte 1) | grandeurs dérivées recalculées en aval, artefact inspectable, erreur localisable | erreur de boîte englobante de B neutralisée ; erreur de position du cylindre non neutralisée (§3.1) |
+| Validation sur le fichier produit (contrainte 2) | le code de retour ne garantit ni l'existence ni la justesse du fichier | spike : STEP valides exportés avant un plantage OCCT ; runs finaux : code de retour 0 sans fichier produit |
+| Reprise bornée, arrêt sans message (contrainte 3) | une correction au plus ; sans message d'erreur, le modèle réécrirait à l'aveugle | règle issue du spike |
+| Vérification à trois grandeurs (contrainte 4) | chaque grandeur a un angle mort | B : seul le volume voit l'erreur ; C (T28) : seul le comptage de trous la voit (`rapport_evaluation.md`, section 3) |
+| Vérification hors de la boucle de reprise | elle exige une référence, absente en usage réel | décisions T34 et T36 ; `rapport_evaluation.md`, section 3, usage sans vérité terrain |
+| CadQuery | Python, noyau OCCT, export STEP natif, script lisible ligne à ligne | C2 acquis au spike |
+| Conteneur Docker | le code généré n'est pas fiable par construction : il ne s'exécute jamais sur l'hôte ; environnement Linux reproductible | aucun incident d'exécution sur l'hôte |
+| Serveur MCP | interface standard entre l'agent et l'outil d'exécution ; sépare l'échec du code, transmis au modèle, de la panne d'infrastructure, propagée sans reprise | coût assumé : pour un seul outil, un appel direct aurait suffi ; le gain porte sur l'ajout d'outils et la réutilisation par d'autres clients MCP |
+
+### 3.5 Cas d'usage : identification et hiérarchisation
+
+Les cas d'usage sont tirés de l'entretien (§1.2) et de l'expérience de l'auteur. La valeur combine le besoin exprimé et le volume ; l'effort mesure l'écart au périmètre et aux capacités démontrées.
+
+| Cas d'usage | Valeur | Effort | Priorité |
+|---|---|---|---|
+| Démonstration d'avant-vente EFICAD, pièces prismatiques sur PDF normalisé | faible : 6 à 24 h par an (§2.2), la valeur exprimée étant sur les pièces complexes | faible : couvert par le POC | 1, comme validation de la chaîne, pas comme cas d'affaires |
+| Numérisation en lot d'un fonds de plans PDF normalisés | moyenne à forte selon le volume | élevé : sans référence, un solide faux n'est pas détecté, seuls les échecs d'exécution le sont ; les scans restent hors périmètre (Q8) | 2, conditionnée à un contrôle sans vérité terrain (§6) |
+| Devis d'usinage ou d'impression 3D depuis un plan 2D | moyenne | moyen : le volume se recalcule sur le STEP, mais une erreur comme celle de B (-9,87 %, `rapport_evaluation.md`, section 2) se reporte sur le prix | 3, même condition |
+| Avant-vente sur pièces complexes | forte (Q13) | élevé : révolutions et balayages hors périmètre (§1.3) | 4, phase ultérieure |
+
+La hiérarchisation fait apparaître une brique commune aux cas 2 et 3 : un contrôle de conformité qui fonctionne sans modèle de référence. C'est la priorité technique après le POC, développée au §6.
+
 ## 5. Contrôle et suivi
 
 Le projet est piloté par budgets fixes et règles décidées d'avance : le périmètre s'ajuste au temps disponible, jamais l'inverse. Chaque règle d'arrêt a été écrite avant la mesure qui pouvait la déclencher.
