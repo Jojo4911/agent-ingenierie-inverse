@@ -212,6 +212,90 @@ Les cas d'usage sont tirés de l'entretien (§1.2) et de l'expérience de l'aute
 
 La hiérarchisation fait apparaître une brique commune aux cas 2 et 3 : un contrôle de conformité qui fonctionne sans modèle de référence. C'est la priorité technique après le POC, développée au §6.
 
+## 4. Stratégie de mise en œuvre et d'industrialisation
+
+### 4.1 Proposition de démarche projet
+
+#### Démarche suivie dans le POC
+
+Principe : temps fixe, périmètre variable. Chaque phase disposait d'un budget décidé avant son démarrage. La variable d'ajustement était le périmètre, nombre de pièces et fonctionnalités secondaires, jamais le budget.
+
+| Phase | Contenu | Outils | Jalon de sortie |
+|---|---|---|---|
+| 1. Spike de faisabilité | extraction, génération et vérification testées séparément, critères figés avant exécution | API du modèle, CadQuery, script de vérification | verdict écrit GO, 2,5 h consommées sur 5 h (`verdict_spike.md`) |
+| 2. Cadrage | contraintes d'architecture issues du spike, test d'un plan réaliste (pièce C, T28) | brief de projet | périmètre figé (§1.3) |
+| 3. Développement en créneau fixe | corpus, serveur MCP, conteneur, vérification, boucle de reprise | Python, uv, SDK anthropic, bibliothèque mcp, Docker | runs de bout en bout sur les 3 pièces de développement |
+| 4. Évaluation | runs sur 2 pièces tenues à l'écart du développement, aucun ajustement après lecture (T43) | `evaluer.py`, traces JSON | `rapport_evaluation.md` |
+| 5. Gel et documentation | README, étiquette de version | git | tag v0.1.0 ; créneau de 20 h clos à 12,73 h, 7,27 h rendues au calendrier |
+
+L'auteur a tenu seul les rôles de développement, d'évaluation et de pilotage. Olivier Guérin est intervenu comme partie prenante métier, et le choix du projet a été validé avec le mentor de la formation.
+
+**Écart de méthode assumé.** L'entretien métier du 08/09 a eu lieu après le spike et le cadrage, pendant le développement. Le spike a traité le risque technique en premier, ce qui était son objet, mais l'entretien a fait apparaître tardivement deux tensions avec le périmètre : les pièces complexes et la confidentialité (§1.3). Dans un projet réel, l'entretien précéderait le spike, et le spike testerait aussi le cas jugé le plus utile par l'utilisateur.
+
+#### Industrialisation proposée, non réalisée
+
+| Phase | Contenu | Outils envisagés | Responsable |
+|---|---|---|---|
+| I1. Durcissement et tests | conteneur sans réseau, limites de mémoire et de processeur (§3.3) ; intégration continue sur les tests existants, en isolant ceux qui appellent l'API | Docker, GitHub Actions, pytest | développement |
+| I2. Contrôle sans référence | détection d'un solide faux sans modèle de référence (§6) ; interface de contrôle humain qui superpose le solide, orientable, au plan d'origine | CadQuery pour la mise en plan, interface à définir | développement, avant-vente pour les essais |
+| I3. Élargissement mesuré | corpus plus grand et plus varié ; ajout d'une opération à la fois (révolution, congé, chanfrein), chacune mesurée sur un nouveau jeu tenu à l'écart | banc d'évaluation existant | développement |
+| I4. Pilote en usage réel | plans clients sous un régime de confidentialité validé ; mesure du temps gagné | journalisation des runs | avant-vente, informatique et sécurité du client |
+| I5. Surveillance | taux d'exécution, taux de reprise, taux de rejet par l'opérateur, jetons consommés par pièce | traces JSON, console du fournisseur | développement |
+
+L'ordre compte : I2 précède I3. Élargir le périmètre sans contrôle automatique élargirait d'autant les erreurs non détectées.
+
+### 4.2 Aide à la prise de décision
+
+#### Risques et opportunités
+
+| Risque | Origine | Niveau |
+|---|---|---|
+| Valeur insuffisante sur le périmètre couvert : attendue sur les pièces complexes, alors que le POC couvre des pièces simples | Q13, §1.3 | fort |
+| Solide faux livré sans alerte : en usage, aucune référence ne permet de détecter une erreur géométrique | pièce B, §3.4 | fort |
+| Variabilité entre deux runs d'un même plan | `rapport_evaluation.md`, section 1 | moyen |
+| Refus d'envoyer les plans à un service externe | Q9, Q10 | fort, bloquant selon le client |
+| Dépendance au fournisseur : une nouvelle version du modèle peut changer les résultats obtenus avec des prompts gelés | §3.2 | moyen |
+
+Opportunités :
+
+- **Un modèle partiel a déjà de la valeur.** Un modèle correct à 95 % est jugé très utile (Q12), parce que la vérification domine le travail. L'outil n'aurait donc pas besoin d'être parfait sur les pièces complexes pour être utile. C'est une hypothèse à tester, pas un résultat.
+- **Le script CadQuery est un historique de construction.** Chaque opération y est une ligne que l'opérateur peut supprimer ou corriger, alors que le STEP (Q11) ne conserve aucun historique. Pour un éditeur de compléments SolidWorks comme EFICAD, les primitives pourraient alimenter l'API de SolidWorks et produire un modèle natif avec son arbre de construction. Hypothèse non évaluée.
+- **Réutilisation hors avant-vente** : numérisation en lot, devis (§3.5).
+
+#### Scénarios budgétaires
+
+Coût d'inférence mesuré sur la console du fournisseur, le 10/09, jour des cinq runs d'évaluation : 80 259 jetons (54 036 en entrée, 26 223 en sortie), pour 0,93 $. Soit au plus 0,19 $ et environ 16 000 jetons par pièce en moyenne, sur des pièces simples avec une correction au plus. Si d'autres appels ont eu lieu le même jour, le coût réel par pièce est inférieur : ce chiffre est un majorant.
+
+| Scénario | Inférence | Infrastructure | Ingénierie |
+|---|---|---|---|
+| S1. API standard | au plus 0,19 $ par pièce simple, soit environ 2 $ par an au volume EFICAD (Q2) ; une pièce complexe consommera davantage, non mesuré | poste existant et Docker | phases I1 à I5, non chiffrées ; repère : le POC a consommé 12,73 h dans son créneau, corpus, évaluation et README compris |
+| S2. API sous rétention nulle | tarif et conditions contractuels, non publics | comme S1 | comme S1, plus la négociation contractuelle |
+| S3. Modèle local | coût marginal quasi nul | GPU au-delà de 8 Go de VRAM (§3.2) | comme S1, plus quantification, serveur d'inférence et affinage sur un jeu annoté (400 plans annotés par des experts dans l'étude citée au §3.2) |
+
+Lecture pour la décision : quelques dizaines de centimes d'inférence par pièce, face à environ 30 minutes d'opérateur qualifié (§2.2). Le coût d'inférence n'est pas un critère de décision. Les postes qui décident sont l'ingénierie d'industrialisation, la vérification humaine qui reste obligatoire, et le régime de confidentialité, qui peut imposer S2 ou S3.
+
+#### Indicateurs de succès
+
+| Indicateur | Type | Cible | Valeur mesurée |
+|---|---|---|---|
+| Temps gagné par pièce | métier | à fixer avec l'utilisateur | non mesuré ; protocole : chronométrer la modélisation manuelle, puis la retouche du modèle produit, sur les mêmes pièces |
+| Complétude du modèle produit | métier | 95 % jugé très utile (Q12) | non mesurée : le POC contrôle des grandeurs globales, pas une part du modèle qui serait correcte ; l'indicateur reste à définir |
+| Taux d'exécution (C2), conformité géométrique (C3), erreur composée | technique | seuils du spike | `rapport_evaluation.md`, section 2 |
+| Coût d'inférence par pièce | technique | aucun seuil utile à ce niveau | au plus 0,19 $ |
+| Solides faux détectés sans référence | technique | banc d'essai défini au §6 | non mesurable à ce stade |
+
+#### Impacts et leviers d'atténuation
+
+| Impact | Nature | Levier |
+|---|---|---|
+| Diffusion de plans clients confidentiels | légal, contractuel | décision client par client entre S2 et S3 ; plans non confidentiels seulement en attendant |
+| Solide faux utilisé en démonstration | métier | vérification humaine obligatoire avant tout usage ; outils de contrôle de la phase I2 |
+| Exécution de code généré par le modèle | sécurité | conteneur durci (I1) |
+| Travail déplacé de la modélisation vers la vérification | organisationnel | outils de contrôle (I2) ; mesure du temps de vérification réel pendant le pilote (I4) |
+| Changement de version du modèle | dépendance fournisseur | version épinglée ; banc d'évaluation rejoué sur un jeu neuf à chaque changement |
+
+**Synthèse pour la décision.** Le coût d'inférence ne décide rien. Deux préalables conditionnent un pilote : un régime de confidentialité accepté par le client, et un contrôle capable de détecter un solide faux sans référence. Tant qu'ils ne sont pas levés, l'outil reste un démonstrateur sur plans non confidentiels, sous vérification humaine.
+
 ## 5. Contrôle et suivi
 
 Le projet est piloté par budgets fixes et règles décidées d'avance : le périmètre s'ajuste au temps disponible, jamais l'inverse. Chaque règle d'arrêt a été écrite avant la mesure qui pouvait la déclencher.
