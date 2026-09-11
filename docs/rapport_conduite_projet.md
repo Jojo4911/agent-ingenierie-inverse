@@ -62,6 +62,61 @@ Le projet traite d'abord les besoins à fort impact et à effort faible ou moyen
 
 Tension assumée : l'entretien place la valeur sur les pièces complexes (Q13), et le processus réel mobilise des balayages et des révolutions (Q1), exclus ici. Le projet est une preuve de faisabilité de la chaîne complète (lecture du plan, primitives, génération, vérification) sur une géométrie bornée. Il ne démontre pas la valeur métier sur les pièces complexes, qui relève d'une phase ultérieure.
 
+## 2. Audit de la solution existante : le processus manuel de remodélisation
+
+### 2.1 Solution actuelle
+
+#### Flux et outils
+
+La solution existante n'est pas un pipeline de données : c'est un flux humain, entièrement manuel, décrit ici d'après l'entretien (Q1, Q4) et l'expérience de l'auteur.
+
+1. **Réception** : le plan arrive par courriel, le plus souvent en PDF. Le texte y est rarement sélectionnable, ce qui interdit une extraction automatique simple des cotes.
+2. **Lecture** : le plan est affiché sur un écran, le logiciel de CAO sur l'autre, SolidWorks chez EFICAD. L'opérateur étudie les vues pour se représenter la pièce dans l'espace. Une vue isométrique, quand elle existe, facilite cette étape.
+3. **Planification** : l'opérateur construit mentalement l'historique de conception, de la fonction de base (extrusion ou révolution) aux fonctions qui en dérivent. Ce plan de construction n'est écrit nulle part.
+4. **Modélisation** : esquisse sur un plan, puis déroulé de l'historique. C'est à cette étape que les cotes sont lues, que les chaînes de cotes sont reconstituées et que les cotes manquantes sont déduites.
+5. **Contrôle** : allers-retours continus entre le modèle et le plan, vue par vue, jusqu'à concordance des dimensions et de la forme.
+
+Outils : un logiciel de CAO dont la licence est déjà acquise, une visionneuse PDF, deux écrans. Aucun script ni outil d'IA (Q7).
+
+### 2.2 Évaluation de l'adéquation aux besoins
+
+#### Visualisation du flux
+
+```mermaid
+flowchart TD
+    A["Plan client reçu par courriel : PDF, texte rarement sélectionnable"] --> B["Lecture des vues et visualisation de la géométrie"]
+    B --> C["Historique de conception construit mentalement"]
+    C --> D["Modélisation : esquisses, extrusions, révolutions"]
+    D --> E{"Cote manquante ?"}
+    E -- oui --> F["Déduction à partir des chaînes de cotes"]
+    F --> D
+    E -- non --> G["Contrôle visuel du modèle contre le plan, vue par vue"]
+    G -- écart --> D
+    G -- conforme --> H["Modèle 3D livré à l'avant-vente"]
+```
+
+#### Critères d'analyse
+
+| Critère | Processus manuel | Limite |
+|---|---|---|
+| Délai par pièce | environ 30 min pour une pièce simple comparable au corpus du projet, contrôle compris ; jusqu'à 2 h pour une pièce complexe ; davantage pour un assemblage (estimations de l'auteur, Q3 n'ayant pas été chiffrée) | temps d'un opérateur qualifié immobilisé à chaque pièce |
+| Coût | temps opérateur uniquement, la licence CAO étant déjà acquise ; la modélisation est le poste principal (Q5) | coût proportionnel au nombre et à la complexité des pièces |
+| Volume | environ une pièce par mois chez EFICAD (Q2), soit de l'ordre de 6 à 24 h par an (calcul de l'auteur sur les deux estimations précédentes) | gain automatisable modeste en heures pour cet acteur |
+| Robustesse | dépend de l'attention et de l'expérience de l'opérateur ; défaillance principale : les cotes manquantes, déduites à la main (Q6) | aucune garantie reproductible |
+| Contrôle | allers-retours visuels entre modèle et plan, qui constituent une grande part du travail (Q12) | aucune trace, aucun critère mesurable, aucune grandeur volumique contrôlée |
+| Couverture géométrique | totale : révolutions, balayages, assemblages (Q1) | aucune, c'est un point fort |
+| Sécurité et confidentialité | le plan ne quitte jamais le poste de travail | aucune, conforme aux exigences clients (Q9, Q10) : c'est un point fort |
+| Maintenance | aucun outil à maintenir | le savoir-faire reste individuel et non capitalisé |
+
+#### Écarts et limites
+
+- **Le coût est dans la modélisation et le contrôle, pas dans la lecture** (Q5, Q12). Une automatisation limitée à l'extraction des cotes traiterait l'étape la moins coûteuse. La cible doit produire le modèle et en outiller le contrôle.
+- **Le contrôle n'est ni tracé ni mesurable.** Rien ne distingue un modèle contrôlé d'un modèle qui ne l'a pas été, et la conformité repose sur l'appréciation visuelle d'une seule personne.
+- **Le plan de construction n'est pas capitalisé.** Il est reconstruit mentalement à chaque pièce, puis perdu.
+- **Le gain en heures est modeste chez EFICAD** au volume actuel. La valeur est à chercher dans la réactivité de l'avant-vente, sur les pièces complexes (Q13) et chez des acteurs qui remodélisent plus souvent. Ce point est repris dans l'aide à la décision (§4.2).
+
+Deux points forts du processus manuel sont à préserver : la confidentialité totale et la couverture géométrique complète. Toute solution cible qui recule sur l'un d'eux doit l'assumer explicitement (§3).
+
 ## 5. Contrôle et suivi
 
 Le projet est piloté par budgets fixes et règles décidées d'avance : le périmètre s'ajuste au temps disponible, jamais l'inverse. Chaque règle d'arrêt a été écrite avant la mesure qui pouvait la déclencher.
