@@ -1,12 +1,22 @@
-"""Câblage bout en bout, une seule passe, sans boucle de reprise.
+"""Pipeline de bout en bout, avec boucle de reprise bornée.
 
 raster PNG -> primitives JSON -> script CadQuery -> sandbox MCP -> rapport.
 
-La boucle de reprise n'existe pas ici : une tentative, un verdict.
+Une extraction et une génération, puis au plus MAX_TENTATIVES exécutions en
+sandbox. La boucle s'arrête dès que l'une de ces conditions est remplie :
+- un fichier STEP est produit ;
+- l'échec ne porte aucun message d'erreur à transmettre ;
+- les tentatives sont épuisées.
+Entre deux tentatives, corriger() réécrit le script à partir du message
+d'erreur. Une ToolError, panne d'infrastructure, remonte sans reprise.
+
 Contraintes appliquées :
-1. le modèle ne produit que des primitives, aucune grandeur derivée n'est
-   demandée ni utilisée.
-2. le succès se lit sur le fichier produit, jamais sur un code de retour.
+1. le modèle ne produit que des primitives, aucune grandeur dérivée n'est
+   demandée ni utilisée ;
+2. le succès se lit sur le fichier produit, jamais sur un code de retour ;
+3. la boucle s'arrête quand elle n'a pas de message d'erreur à transmettre.
+La vérification géométrique n'entre pas dans la boucle : elle porte sur le
+fichier produit, en aval, dans evaluer.py.
 """
 from __future__ import annotations
 
