@@ -358,3 +358,58 @@ Le verdict est joint tel quel en annexe : [`verdict_spike.md`](verdict_spike.md)
 #### Traçabilité
 
 Un commit atomique par tâche. Le code des runs mesurés est celui du commit `2143428` ; le tag `v0.1.0` marque l'état livré, les commits postérieurs ne touchant que la documentation et le suivi git.
+
+## 6. Conclusion et recommandations
+
+### 6.1 Résumé des choix clés
+
+Chaque ligne oppose le choix retenu à l'alternative écartée ; la justification figure au paragraphe cité.
+
+| Choix retenu | Alternative écartée | Justification |
+|---|---|---|
+| Ne jamais croire ce qui est déclaré : le modèle ne produit que des primitives, la validation porte sur le fichier produit (contraintes 1 et 2) | grandeurs lues par le modèle ; code de retour du processus | §3.4 |
+| Reprise bornée, arrêtée quand aucun message d'erreur n'est disponible (contrainte 3) | réécriture à l'aveugle | §3.4 |
+| Trois grandeurs de vérification ensemble (contrainte 4) | boîte englobante et comptage de trous seuls | §3.4 : sur B, seul le volume voit l'erreur ; sur C en T28, seul le comptage |
+| Modèle de vision par API pour le POC | modèle local ouvert, plus favorable à la confidentialité | §3.2 ; tension nommée au §1.3 |
+| Évaluation finale sur deux pièces tenues à l'écart | évaluation sur les pièces ayant servi au développement | `rapport_evaluation.md` |
+
+### 6.2 Perspective prioritaire : un contrôle sans référence
+
+Les renvois des §1.2, §3.5, §4.1 (phase I2) et §4.2 (indicateurs de succès) convergent ici.
+
+**Le problème.** Les trois grandeurs de vérification exigent un modèle de référence : elles servent l'évaluation, pas l'usage (`rapport_evaluation.md`). En usage, l'utilisateur n'a que le plan. Une erreur de lecture produit un solide exécutable, donc aucun message d'erreur, et la boucle de reprise s'arrête sur un résultat faux (contrainte 3). Les incertitudes déclarées par le modèle ne compensent pas : sur B, le cylindre est sorti faux deux fois à l'identique sans jamais y figurer.
+
+**La proposition : l'aller-retour par mise en plan.** Le solide produit est remis en plan : CadQuery exporte en SVG ses projections orthogonales, lignes cachées comprises, sans cotation. Le modèle compare ces vues au plan d'origine. Une différence constatée devient le message d'erreur qui manque aujourd'hui à l'étape de lecture : la boucle dispose alors d'un message à transmettre, dans le respect de la contrainte 3.
+
+**La limite : des erreurs corrélées.** Si le même modèle lit le plan puis compare, une erreur de lecture peut se reproduire à la comparaison ; le cylindre de B, faux deux fois à l'identique, illustre ce risque. Un modèle différent pour la comparaison l'atténuerait sans l'éliminer.
+
+**Le banc d'essai.** L'indicateur « solides faux détectés sans référence » du §4.2 se mesure d'abord sur deux pièces existantes, dont le statut est établi : B, faux et expliqué au mm³, doit déclencher une alerte ; C, confronté à la vérité entité par entité, ne doit pas en déclencher. A, D et E n'entrent pas au banc, leurs positions n'ayant pas été contrôlées. Deux pièces donnent un verdict de viabilité, pas un taux.
+
+**La variante humaine.** Pour faciliter la vérification humaine (Q12), une interface superpose au plan d'origine le solide, orientable. Elle ne détecte rien seule : elle réduit le coût d'une vérification qui reste obligatoire tant que la détection automatique n'est pas démontrée.
+
+**L'architecture.** La mise en plan serait un deuxième outil exposé par le même serveur MCP et exécuté dans le même conteneur.
+
+**L'état de l'art.** CADCodeVerify (Alrashedy et al., ICLR 2025, arXiv:2410.05340, consulté le 11/09/2026) boucle déjà un retour visuel sur l'objet produit : le modèle formule des questions de validation, y répond, puis corrige le code CAD généré. Sa référence est constituée d'images de l'objet attendu ; ici, elle serait le plan d'origine, seule référence dont dispose l'utilisateur.
+
+### 6.3 Autres perspectives
+
+- **Suivi en usage.** Le §5.2 exclut le monitoring de production, sans objet pour un POC non déployé. Les indicateurs sont fixés par la phase I5 (§4.1). Le contrôle sans référence en ajouterait deux : le taux d'alerte, et la nature des erreurs détectées, lecture des valeurs ou compréhension de la géométrie, distinction qui a fondé le verdict du spike.
+- **MCP.** Dans le POC, le pipeline appelle un seul outil dans un ordre fixe, et MCP n'y est pas indispensable. Il le devient dès que le modèle choisit entre plusieurs outils, mise en plan comprise, ou qu'un autre client réutilise les mêmes outils, un complément SolidWorks par exemple (§4.2, opportunités).
+
+### 6.4 Prochaines étapes recommandées
+
+1. Exécuter le banc d'essai du §6.2 sur B et C. Le coût est faible, les deux pièces existent, et le résultat décide si la phase I2 est viable telle que proposée.
+2. Suivre ensuite la séquence I1 à I5 du §4.1, dans l'ordre qu'elle fixe.
+3. N'engager aucun pilote avant la levée des deux préalables énoncés dans la synthèse du §4.2.
+
+## 7. Annexes
+
+- **Dépôt** : https://github.com/Jojo4911/agent-ingenierie-inverse, tag `v0.1.0`. Les runs mesurés ont été exécutés sur le commit `2143428`.
+- **README** : [`README.md`](../README.md), en anglais.
+- **Verdict du spike** : [`docs/verdict_spike.md`](verdict_spike.md), versé tel quel.
+- **Rapport d'évaluation** : [`docs/rapport_evaluation.md`](rapport_evaluation.md) : résultats par pièce, taux mesurés, limites nommées.
+- **Traces des runs** : [`evaluations/`](../evaluations/), cinq fichiers JSON du 10/09/2026, un par pièce.
+- **Scripts de lancement** : [`agent.py`](../agent.py), le pipeline ; [`evaluer.py`](../evaluer.py), les runs d'évaluation.
+- **Illustration** : [`docs/img/part_e_drawing_to_solid.jpg`](img/part_e_drawing_to_solid.jpg), plan et solide de la pièce E.
+- **Suivi des tâches** : [`docs/suivi_taches_projet_15.csv`](suivi_taches_projet_15.csv), état au 14/09/2026. Il couvre l'ensemble du P15, portfolio compris ; la source est tenue dans un tableur.
+- **Test du plan réaliste (pièce C, T28)** : pas d'annexe dédiée. Le résultat figure au §1.3 et dans `rapport_evaluation.md`, la note complète dans le suivi des tâches, ligne T28.
