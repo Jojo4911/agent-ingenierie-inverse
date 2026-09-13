@@ -313,7 +313,7 @@ Le projet est piloté par budgets fixes et règles décidées d'avance : le pér
 | Livrables du projet libre | Blocs 1 à 7 du cadrage               | Tous livrés, dépôt publié et tagué `v0.1.0`              | Dépôt                  |
 | Performance               | Seuils C1 à C3 figés au spike        | C2 : 5 sur 5 ; C3 : 4 sur 5                              | [Rapport d'évaluation](rapport_evaluation.md), section 2 |
 
-L'unité de coût suivie est l'heure de travail. Le CSV de suivi porte, pour chaque tâche, l'estimé, le réel, l'écart et le statut ; il est joint en annexe. [Chiffres finaux à la clôture.]
+L'unité de coût suivie est l'heure de travail. Le CSV de suivi porte, pour chaque tâche, l'estimé, le réel, l'écart et le statut ; il est joint en annexe. Au dépôt du livrable, 35,59 h sont produites sur les 55,50 h planifiées pour l'ensemble du projet 15 ; restent le dépôt, la soutenance et le bilan, estimés à 3 h.
 
 #### Ce que le suivi a appris : le prédicteur des écarts
 
@@ -326,7 +326,7 @@ Sur le créneau du projet libre, le rapport entre réel et estimé suit la quant
 - **Créneau fixe.** Le projet libre dispose de 20 h, décidées avant le spike et indépendamment de son résultat. Le périmètre géométrique est borné en conséquence ; toute addition impose une coupe équivalente.
 - **Coupe-circuit à 150 %.** Une tâche qui atteint 150 % de son estimation s'arrête : une version minimale qui satisfait la définition de terminé est livrée et le point est noté. Distinct du plafond de 30 à 40 minutes par blocage, au-delà duquel la solution complète est demandée.
 - **Revue hebdomadaire du vendredi.** Cumul réel contre prévu, débit effectif, date de fin projetée.
-- **Jalon de bascule du 14/09.** Contrôle sur les heures produites, pas sur l'avancement : sous 30 h cumulées sur les deux premières semaines, replanification automatique à 12 h par semaine, non renégociable. [Verdict du jalon.]
+- **Jalon de bascule du 14/09.** Contrôle sur les heures produites, pas sur l'avancement : sous 30 h cumulées sur les deux premières semaines, replanification automatique à 12 h par semaine, non renégociable. Mesuré le 13/09 au terme de la deuxième semaine : 35,59 h cumulées, seuil franchi, le régime de 19 h par semaine est maintenu.
 - **Arbitrages écrits.** Chaque décision est tranchée, motivée et non rouverte. Exemples : la vérification géométrique reste hors de la boucle de reprise ; les prompts sont gelés ; la pièce B, non conforme, n'est ni relancée ni corrigée ; le jeu tenu à l'écart, une fois consommé, n'autorise plus aucun ajustement.
 
 #### Le spike, instrument de décision
@@ -411,5 +411,5 @@ Les renvois des §1.2, §3.5, §4.1 (phase I2) et §4.2 (indicateurs de succès)
 - **Traces des runs** : [`evaluations/`](../evaluations/), cinq fichiers JSON du 10/09/2026, un par pièce.
 - **Scripts de lancement** : [`agent.py`](../agent.py), le pipeline ; [`evaluer.py`](../evaluer.py), les runs d'évaluation.
 - **Illustration** : [`docs/img/part_e_drawing_to_solid.jpg`](img/part_e_drawing_to_solid.jpg), plan et solide de la pièce E.
-- **Suivi des tâches** : [`docs/suivi_taches_projet_15.csv`](suivi_taches_projet_15.csv), état au 14/09/2026. Il couvre l'ensemble du P15, portfolio compris ; la source est tenue dans un tableur.
+- **Suivi des tâches** : [`docs/suivi_taches_projet_15.csv`](suivi_taches_projet_15.csv), état au 13/09/2026. Il couvre l'ensemble du P15, portfolio compris ; la source est tenue dans un tableur.
 - **Test du plan réaliste (pièce C, T28)** : pas d'annexe dédiée. Le résultat figure au §1.3 et dans `rapport_evaluation.md`, la note complète dans le suivi des tâches, ligne T28.
