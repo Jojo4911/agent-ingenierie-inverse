@@ -1,5 +1,7 @@
 # Rapport de conduite de projet : agent d'ingénierie inverse
 
+Jonathan Fernandez : OpenClassrooms, parcours AI Engineer, projet 15 : 14 septembre 2026
+
 ## 1. Contexte et analyse des besoins
 
 ### 1.1 Présentation du contexte
